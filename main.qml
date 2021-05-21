@@ -56,6 +56,7 @@ ApplicationWindow{
     Settings{
         id: apps
         property string uHtml: ''
+        property string uUrl: ''
     }
     Item{
         id: xAppWV
@@ -168,6 +169,7 @@ ApplicationWindow{
                             }*/
                         }
                         console.log('Html4: '+uMsgs)
+                        if(uMsgs.toString().indexOf('undefined dice')>=0)return
                         let nMsg=uMsgs[uMsgs.length-3]+' dice: '+uMsgs[uMsgs.length-2]
                         console.log('Html5: '+nMsg)
                         if(isVM(nMsg)&&nMsg!==app.uMsg){
@@ -233,9 +235,28 @@ ApplicationWindow{
             let comp=Qt.createQmlObject(code, xApp, 'code')
         }
     }
+    Timer{
+        id: tLink
+        running: false
+        repeat: true
+        interval: 2000
+        onTriggered: {
+                let  cb = clipboard.getText()
+                if(cb.indexOf('https://studio.youtube.com/live_chat?is_popout=1&v=')>=0){
+                    console.log('cb:' + cb)
+                    wv.url=cb
+                    clipboard.setText('Enlace de youtube chat capturado.')
+                }
+
+        }
+    }
     Component.onCompleted: {
         let args=Qt.application.arguments
-        wv.url=args[2]
+        if(args.length>2){
+            wv.url=args[2]
+        }else{
+            tLink.start()
+        }
     }
     function isVM(msg){
         if(msg.indexOf('http:/')>=0||msg.indexOf('https:/')>=0){
