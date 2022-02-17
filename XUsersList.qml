@@ -40,7 +40,8 @@ Rectangle {
         function addItem(user){
             return {
                 u: user,
-                e: true
+                e: true,
+                iv: -1
             }
         }
     }
@@ -54,11 +55,16 @@ Rectangle {
             border.color: xUserSettings.enabled?'red':'blue'
             color: 'black'
             anchors.horizontalCenter: parent.horizontalCenter
+            function getIndexVoice(){
+                return 3213//xUserSettings.voice
+            }
             Settings{
                 id: xUserSettings
-                fileName: '../'+u+'.cfg'
+                fileName: '/home/ns/Documentos/gd/yt-chat-cfg/'+u+'.cfg'
                 property bool enabled: true
+                property int voice: -1
                 onEnabledChanged: e=enabled
+                //Component.onCompleted: iv=voice
             }
             Text {
                 id: txtUser
@@ -69,6 +75,20 @@ Rectangle {
                 anchors.centerIn: parent
                 color: 'white'
                 visible: u!=='ricardo__martin'
+            }
+
+            Rectangle{
+                width: app.fs*0.5
+                height: width
+                color: 'red'
+                anchors.right: parent.left
+                anchors.verticalCenter: parent.verticalCenter
+                MouseArea{
+                    anchors.fill: parent
+                    onClicked: {
+                        cb.visible=!cb.visible
+                    }
+                }
             }
             MouseArea{
                 anchors.fill: parent
@@ -102,11 +122,37 @@ Rectangle {
                 }
                 //visible: u==='ricardo__martin'
             }
+            ComboBox{
+                id:cb
+                visible: false
+                width: parent.width-app.fs*0.5
+                height: app.fs
+                font.pixelSize: app.fs*0.75
+                model: app.aVoices
+                currentIndex: iv
+                onCurrentIndexChanged: {
+                    xUserSettings.voice=currentIndex
+                    iv=currentIndex
+                }
+                anchors.centerIn: parent
+            }
             Component.onCompleted: {
                 e=xUserSettings.enabled
+                iv=xUserSettings.voiceComboB
             }
 //            function isEnabled(){
 //                return xUserSettings.enabled
+//            }
+            Timer{
+                running: iv===-1||xUserSettings.voice===-1
+                repeat: true
+                interval: 100
+                onTriggered: {
+                    iv=xUserSettings.voice
+                }
+            }
+//            Component.onCompleted: {
+//                iv=xUserSettings.voice
 //            }
         }
     }
@@ -135,5 +181,15 @@ Rectangle {
             }
         }
         return e
+    }
+    function getIndexVoice(user){
+        let iv=0
+        for(var i=0;i<lm.count;i++){
+            //console.log('Dato isEnabled:'+lm.get(i).e)
+            if(user===lm.get(i).u){
+                iv=lm.get(i).iv
+            }
+        }
+        return iv
     }
 }

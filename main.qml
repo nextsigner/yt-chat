@@ -12,6 +12,31 @@ ApplicationWindow{
     title: 'YouTube Chat Speech'
     property int fs: width*0.02
     property bool editable: false
+    property var aVoices: [
+        'es-ES_EnriqueVoice',
+        'es-ES_EnriqueV3Voice',
+        'es-ES_LauraVoice',
+        'es-ES_LauraV3Voice',
+        'es-LA_SofiaVoice',
+        'es-LA_SofiaV3Voice',
+        'es-US_SofiaVoice',
+        'es-US_SofiaV3Voice',
+        'en-GB_CharlotteV3Voice',
+        'en-GB_KateVoice',
+        'en-GB_KateV3Voice',
+        'en-GB_JamesV3Voice',
+        'en-US_AllisonVoice',
+        'en-US_AllisonV3Voice',
+        'en-US_EmilyV3Voice',
+        'en-US_OliviaV3Voice',
+        'en-US_LisaVoice',
+        'en-US_LisaV3Voice',
+        'en-US_HenryV3Voice',
+        'en-US_KevinV3Voice',
+        'en-US_MichaelVoice',
+        'en-US_MichaelV3Voice']
+
+
     onClosing: {
         close.accepted = true
         Qt.quit()
@@ -106,7 +131,7 @@ ApplicationWindow{
                 onClicked: {
                     Qt.quit()
                     app.editable=false
-                    console.log('Desactivando...')
+                    //console.log('Desactivando...')
                     showMode(app.editable)
                 }
                 Rectangle{
@@ -174,27 +199,34 @@ ApplicationWindow{
                                 uMsgs.push(m0[i])
                             }*/
                         }
-                        console.log('Html4: '+uMsgs)
+                        //console.log('Html4: '+uMsgs)
                         if(uMsgs.toString().indexOf('undefined dice')>=0)return
                         let nMsg=uMsgs[uMsgs.length-3]+' dice: '+uMsgs[uMsgs.length-2]
-                        console.log('Html5: '+nMsg)
+                        //console.log('Html5: '+nMsg)
                         if(isVM(nMsg)&&nMsg!==app.uMsg){
                             app.uMsg=nMsg//uMsgs[uMsgs.length-1]
                             xLed.toogle=!xLed.toogle
                             xLed.z=xLed.z+wv.z+1000
                             //mp.source='https://text-to-speech-demo.ng.bluemix.net/api/v3/synthesize?text=ricardo%20%20martin%20dice%20probando%20audio&voice=es-ES_EnriqueVoice&download=true&accept=audio%2Fmp3'
                             let mm0=app.uMsg.trim().split(' dice: ')
-                            console.log('mm0['+mm0[0]+']')
+                            //console.log('mm0['+mm0[0]+']')
                             xUserList.addUser(mm0[0])
+                            //console.log('User voice index: '+xUserList.getIndexVoice(mm0[0]))
                             if(!xUserList.userIsEnabled(mm0[0])){
-                                console.log('User disabled: '+mm0[0])
+                                //console.log('User disabled: '+mm0[0])
+
                                 return
                             }
                             let msg=app.uMsg//.replace(mm0[0], mm0[0]+' dice ')
                             msg=msg.replace(/ /g, '%20').replace(/_/g, ' ')
                             //console.log('MSG: '+msg)
-                            playlist.addItem('https://text-to-speech-demo.ng.bluemix.net/api/v3/synthesize?text='+msg+'&voice=es-ES_EnriqueVoice&download=true&accept=audio%2Fmp3')
+                            //playlist.addItem('https://text-to-speech-demo.ng.bluemix.net/api/v3/synthesize?text='+msg+'&voice=es-ES_EnriqueVoice&download=true&accept=audio%2Fmp3')
+                            //playlist.addItem('https://text-to-speech-demo.ng.bluemix.net/api/v3/synthesize?text='+msg+'&voice='+app.aVoices[xUserList.getIndexVoice(mm0[0])]+'&download=true&accept=audio%2Fmp3')
+                            let indexVoice=xUserList.getIndexVoice(mm0[0])
+                            if(indexVoice<0)indexVoice=0
+                            playlist.addItem('https://text-to-speech-demo.ng.bluemix.net/api/v3/synthesize?text='+msg+'&voice='+app.aVoices[indexVoice]+'&download=true&accept=audio%2Fmp3')
                             mp.play()
+                            console.log('IV: '+indexVoice)
                             let mps=(''+mp.source).replace('file://', '')
                             info.text=mps+' '+unik.fileExist(mps)
                         }
@@ -249,7 +281,7 @@ ApplicationWindow{
         onTriggered: {
                 let  cb = clipboard.getText()
                 if(cb.indexOf('https://studio.youtube.com/live_chat?is_popout=1&v=')>=0){
-                    console.log('cb:' + cb)
+                    //console.log('cb:' + cb)
                     wv.url=cb
                     clipboard.setText('Enlace de youtube chat capturado.')
                     let msg='Enlace de chat capturado.'
@@ -278,7 +310,7 @@ ApplicationWindow{
         }
 
         //Ejemplo que funciona.
-        //wv.url='https://studio.youtube.com/live_chat?is_popout=1&v=B6Nj69flLRI'
+        //wv.url='https://studio.youtube.com/live_chat?is_popout=1&v=XE-2kN3Szqc'
     }
     function isVM(msg){
         if(msg.indexOf('http:/')>=0||msg.indexOf('https:/')>=0){
