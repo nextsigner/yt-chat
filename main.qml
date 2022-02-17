@@ -61,14 +61,15 @@ ApplicationWindow{
     Item{
         id: xAppWV
         anchors.fill: parent
-        opacity: app.editable?1.0:0.65
+        //z:xApp.z+1
+        //opacity: app.editable?1.0:0.65
         WebView{
             id: wv
             width: parent.width
             height: parent.height//*0.5
-            x:app.width+1280
+            //x:app.width+1280
             //            y: 100
-            //url:"https://studio.youtube.com/live_chat?is_popout=1&v=UEpa88Mn4c0"
+            //url:"https://studio.youtube.com/live_chat?is_popout=1&v=V0nm81lBBUU"
             visible:false
             onLoadProgressChanged:{
                 if(loadProgress===100){
@@ -131,7 +132,12 @@ ApplicationWindow{
             }
         }
     }
-
+    Text{
+        anchors.centerIn: parent
+        font.pixelSize: 50
+        text: wv.url
+        color: 'red'
+    }
     property string uMsg: 'null'
     Timer{
         id: tCheck
@@ -246,6 +252,8 @@ ApplicationWindow{
                     console.log('cb:' + cb)
                     wv.url=cb
                     clipboard.setText('Enlace de youtube chat capturado.')
+                    let msg='Enlace de chat capturado.'
+                    playlist.addItem('https://text-to-speech-demo.ng.bluemix.net/api/v3/synthesize?text='+msg+'&voice=es-ES_EnriqueVoice&download=true&accept=audio%2Fmp3')
                 }
 
         }
@@ -253,10 +261,24 @@ ApplicationWindow{
     Component.onCompleted: {
         let args=Qt.application.arguments
         if(args.length>2){
-            wv.url=args[2]
+            if(args[1].indexOf('https://studio.youtube.com/live_chat')>=0){
+                wv.url=args[1]
+                return
+            }
+            if(args[2].indexOf('https://studio.youtube.com/live_chat')>=0){
+                wv.url=args[2]
+                return
+            }
+            if(args[3].indexOf('https://studio.youtube.com/live_chat')>=0){
+                wv.url=args[3]
+                return
+            }
         }else{
             tLink.start()
         }
+
+        //Ejemplo que funciona.
+        //wv.url='https://studio.youtube.com/live_chat?is_popout=1&v=B6Nj69flLRI'
     }
     function isVM(msg){
         if(msg.indexOf('http:/')>=0||msg.indexOf('https:/')>=0){
